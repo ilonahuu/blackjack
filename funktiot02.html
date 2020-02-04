@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+</head>
+<body>
+<script>
+
+var maat = ["Ruutu", "Risti", "Pata", "Hertta"];
+var arvot = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+var pakka = new Array();
+var sina = new Array();
+var tietokone = new Array();
+
+function luoPakka() {
+
+	pakka = new Array();
+	
+	for(var i = 0; i < maat.length; i++) 
+	{
+		for(var x = 0; x < arvot.length; x++) 
+		{
+			var pisteet = parseInt(arvot[x]); 
+			
+			if(arvot[x] == "J" || arvot[x] == "Q" || arvot[x] == "K") {
+				pisteet = 10;
+			}
+			else if(arvot[x] == "A") {
+				pisteet = 11;
+			}
+			
+			var kortti = { Maa: maat[i], Arvo: arvot[x], Pisteet: pisteet };
+			pakka.push(kortti);
+		}
+	}
+}
+
+function sekoitaPakka() {
+
+	sekoitettuPakka = new Array();
+	
+	while (pakka.length > 0) {
+		var sekoitettavaKortti = pakka[Math.floor(Math.random() * pakka.length)];
+		sekoitettuPakka.push(sekoitettavaKortti);
+		pakka.splice(pakka.indexOf(sekoitettavaKortti), 1 );
+	}
+	
+	pakka = sekoitettuPakka;
+}
+
+function luoPelaajat() {
+
+	tietokone = {Kasi: new Array(), Pisteet: 0 };
+	sina = {Kasi: new Array(), Pisteet: 0 };
+
+}
+
+function jaaKortit(num) {
+	
+	for( var i = 0; i < num; i++) { // montako korttia
+
+		var kortti = pakka.pop();
+		sina.Kasi.push(kortti);
+		sina.Pisteet = sina.Pisteet + kortti.Pisteet;
+		if (num > 1) {
+			kortti = pakka.pop()
+			tietokone.Kasi.push(kortti);
+			tietokone.Pisteet = tietokone.Pisteet + kortti.Pisteet;
+		}
+	}
+}
+
+function muutaKorttiStringiksi (kortti) {
+	return kortti.Maa + " " + kortti.Arvo;
+}
+
+function muutaKortitStringeiksi (kortit) {
+	var stringKortit = new Array();
+	for (var i = 0; i < kortit.length; i++) {
+		stringKortit[i] = kortit[i].Maa + " " + kortit[i].Arvo;
+	}
+	return stringKortit;
+}
+
+alert("Sinulle arvotaan kaksi korttia, joilla ottelet tietokonetta vastaan. Se pelaaja voittaa, jonka luku on lähimpänä 21. Häviät pelin, jos ylität luvun 21.");
+var uusiPeli = "K";
+
+while(uusiPeli == "K") {
+
+	luoPakka();
+	sekoitaPakka();
+	luoPelaajat();
+	jaaKortit(2);
+
+	var korttiInfo = "Sait kortit:" + sina.toString();
+	alert("Korttisi:\n" + sina.Kasi.map(muutaKorttiStringiksi).join('\n') + "\nYhteispisteet: " + sina.Pisteet.toString());
+
+	while(sina.Pisteet < 21 && prompt("Haluatko nostaa vielä kortin?", "Vastaa K/E") == "K") {
+		jaaKortit(1);
+		alert("Korttisi:\n" + muutaKortitStringeiksi(sina.Kasi).join('\n') + "\nYhteispisteet: " + sina.Pisteet.toString());
+	}
+	
+	var tulosTeksti = "";
+
+	if( sina.Pisteet > tietokone.Pisteet && sina.Pisteet <= 21) {
+		tulosTeksti = tulosTeksti + "Voitit pelin!\n";
+	}
+	else {
+		tulosTeksti = tulosTeksti + "Hävisit pelin!\n";
+	}
+	tulosTeksti = tulosTeksti + "Korttisi: " + 
+			   muutaKortitStringeiksi(sina.Kasi).join(", ") + 
+			   "\nYhteispisteet: " + sina.Pisteet.toString() +
+			   "\nTietokoneen kortit: " + 
+			   muutaKortitStringeiksi(tietokone.Kasi).join(", ") +
+			   "\nTietokoneen pisteet: " + tietokone.Pisteet.toString();
+	alert(tulosTeksti);		   
+	uusiPeli = prompt("Pelataanko uudestaan?","Vastaa K/E");
+}
+</script>
+</body>
+</html>
